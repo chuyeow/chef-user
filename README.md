@@ -254,7 +254,7 @@ this by installing the "libshadow-ruby1.8" package.
       <td>create</td>
       <td>
         Create the user, its home directory, <code>.ssh/authorized_keys</code>,
-        and <code>.ssh/{id_dsa,id_dsa.pub}</code>.
+        and <code>.ssh/{id_rsa,id_rsa.pub}</code>.
       </td>
       <td>Yes</td>
     </tr>
