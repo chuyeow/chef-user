@@ -24,7 +24,8 @@ data bag called `"users"` with an item like the following:
       "comment"   : "Han Solo",
       "home"      : "/opt/hoth/hsolo",
       "groups"    : ["admin", "www-data"],
-      "ssh_keys"  : ["123...", "456..."]
+      "ssh_keys"  : ["123...", "456..."],
+      "generate_authorized_keys": true
     }
 
 or a user to be removed:

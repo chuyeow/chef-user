@@ -27,6 +27,7 @@ def load_current_resource
   @non_unique = bool(new_resource.non_unique, node['user']['non_unique'])
   @create_group = bool(new_resource.create_group, node['user']['create_group'])
   @ssh_keygen = bool(new_resource.ssh_keygen, node['user']['ssh_keygen'])
+  @generate_authorized_keys = bool(new_resource.generate_authorized_keys, node['user']['generate_authorized_keys'])
 end
 
 action :create do
@@ -131,22 +132,24 @@ def dir_resource(exec_action)
 end
 
 def authorized_keys_resource(exec_action)
-  # avoid variable scoping issues in resource block
-  ssh_keys = Array(new_resource.ssh_keys)
+  if @generate_authorized_keys
+    # avoid variable scoping issues in resource block
+    ssh_keys = Array(new_resource.ssh_keys)
 
-  r = template "#{@my_home}/.ssh/authorized_keys" do
-    cookbook    'user'
-    source      'authorized_keys.erb'
-    owner       new_resource.username
-    group       Etc.getpwnam(new_resource.username).gid
-    mode        '0600'
-    variables   :user     => new_resource.username,
-                :ssh_keys => ssh_keys,
-                :fqdn     => node['fqdn']
-    action      :nothing
+    r = template "#{@my_home}/.ssh/authorized_keys" do
+      cookbook    'user'
+      source      'authorized_keys.erb'
+      owner       new_resource.username
+      group       Etc.getpwnam(new_resource.username).gid
+      mode        '0600'
+      variables   :user     => new_resource.username,
+                  :ssh_keys => ssh_keys,
+                  :fqdn     => node['fqdn']
+      action      :nothing
+    end
+    r.run_action(exec_action)
+    new_resource.updated_by_last_action(true) if r.updated_by_last_action?
   end
-  r.run_action(exec_action)
-  new_resource.updated_by_last_action(true) if r.updated_by_last_action?
 end
 
 def keygen_resource(exec_action)
