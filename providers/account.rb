@@ -27,6 +27,7 @@ def load_current_resource
   @non_unique = bool(new_resource.non_unique, node['user']['non_unique'])
   @create_group = bool(new_resource.create_group, node['user']['create_group'])
   @ssh_keygen = bool(new_resource.ssh_keygen, node['user']['ssh_keygen'])
+  @append_keys = bool(new_resource.append_keys, node['user']['append_keys'])
   @generate_authorized_keys = bool(new_resource.generate_authorized_keys, node['user']['generate_authorized_keys'])
 end
 
@@ -132,11 +133,24 @@ def dir_resource(exec_action)
 end
 
 def authorized_keys_resource(exec_action)
-  if @generate_authorized_keys
-    # avoid variable scoping issues in resource block
-    ssh_keys = Array(new_resource.ssh_keys)
+  return unless @generate_authorized_keys
 
-    r = template "#{@my_home}/.ssh/authorized_keys" do
+  # avoid variable scoping issues in resource block
+  ssh_keys = Array(new_resource.ssh_keys)
+  authorized_keys_path = "#{@my_home}/.ssh/authorized_keys"
+
+  if @append_keys && ::File.exists?(authorized_keys_path)
+    file = Chef::Util::FileEdit.new(authorized_keys_path)
+    ssh_keys.each do |key|
+      file.insert_line_if_no_match(
+        %r{^#{key}$},
+        key
+      )
+    end
+    file.write_file
+    new_resource.updated_by_last_action(true) if file.send(:file_edited)
+  else
+    r = template authorized_keys_path do
       cookbook    'user'
       source      'authorized_keys.erb'
       owner       new_resource.username

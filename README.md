@@ -20,11 +20,12 @@ To use `recipe[user::data_bag]`, include it in your run\_list and have a
 data bag called `"users"` with an item like the following:
 
     {
-      "id"        : "hsolo",
-      "comment"   : "Han Solo",
-      "home"      : "/opt/hoth/hsolo",
-      "groups"    : ["admin", "www-data"],
-      "ssh_keys"  : ["123...", "456..."],
+      "id"          : "hsolo",
+      "comment"     : "Han Solo",
+      "home"        : "/opt/hoth/hsolo",
+      "groups"      : ["admin", "www-data"],
+      "ssh_keys"    : ["123...", "456..."],
+      "append_keys" : true,
       "generate_authorized_keys": true
     }
 

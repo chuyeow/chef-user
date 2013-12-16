@@ -4,6 +4,13 @@ user_account 'hsolo' do
   comment   'Han Solo'
   ssh_keys  ['key111...', 'key222...']
   home      '/opt/hoth/hsolo'
+  generate_authorized_keys true
+end
+
+user_account 'vagrant' do
+  ssh_keys    ['key111...']
+  append_keys true
+  generate_authorized_keys true
 end
 
 user_account 'lando' do

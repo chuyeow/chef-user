@@ -98,6 +98,10 @@ describe 'User::Attributes::Default' do
       @node[attr_ns]['ssh_keygen'].must_equal "true"
     end
 
+    it "sets default append keys" do
+      @node[attr_ns]['append_keys'].must_equal "false"
+    end
+
     it "sets default generate authorized keys" do
       @node[attr_ns]['generate_authorized_keys'].must_equal "false"
     end
